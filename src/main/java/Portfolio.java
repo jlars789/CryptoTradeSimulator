@@ -13,7 +13,7 @@ public class Portfolio {
 	private double fiatInitial;
 
 	public Portfolio(double[] vals, double[] er) {
-		this.USD = 2000;
+		this.USD = 200;
 		for(int i = 0 ; i < 4; i ++) {
 			this.fiatInitial += vals[i];
 		}
@@ -80,14 +80,14 @@ public class Portfolio {
 	public void buyWithUSD(String code, double amount) {
 		//System.out.println("Amount of " + code + ": $" + amount);
 		double fee = amount * 0.005;
-		if((USD+fee) >= amount && trade[getByCode(code)]) {
+		if((USD+fee) >= amount && trade[getByCode(code)] && amount >= 10) {
 			this.USD -= (amount+fee);
 			currency[getByCode(code)].modifyValue(amount);
 			System.out.println("Bought " + code + " for $" + amount);
 			printBalance();
 			System.out.println();
 		} else {
-			System.out.println("Insufficient Funds!");
+			
 		}
 	}
 	
@@ -157,6 +157,13 @@ public class Portfolio {
 	public void printFinal() {
 		System.out.println("You finished with $" + this.getFiatValue() + " and started with $" + this.fiatInitial);
 		System.out.println("This is a net change of $" + (this.getFiatValue() - this.fiatInitial));
+		System.out.println("Distribution: ");
+		System.out.println("USD: $" + USD);
+		System.out.println("BTC: $" + currency[0].getFiatValue());
+		System.out.println("ETH: $" + currency[1].getFiatValue());
+		System.out.println("LTC: $" + currency[2].getFiatValue());
+		System.out.println("XRP: $" + currency[3].getFiatValue());
+		
 	}
 
 }

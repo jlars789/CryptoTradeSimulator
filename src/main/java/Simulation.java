@@ -29,9 +29,9 @@ public class Simulation implements Runnable {
 	private long hours;
 	private long skip;
 	
-	public Simulation(double[] fiatAmount, int weeks, LocalDateTime startDate) {
+	public Simulation(double[] fiatAmount, double weeks, LocalDateTime startDate) {
 		this.skip = Duration.between(FIRST_DATE, startDate).toHours();
-		this.hours = skip + (weeks * 186);
+		this.hours = skip + (int)(weeks * 186);
 		if(hours > MAX_HOURS) hours = MAX_HOURS;
 		this.currentHour = skip;
 		this.dataInit();
@@ -43,7 +43,7 @@ public class Simulation implements Runnable {
 		while(currentHour < hours) {
 			this.updateVals();
 			
-			//this.evaluate();
+			this.evaluate();
 			
 			currentHour++;
 			try {
@@ -69,13 +69,11 @@ public class Simulation implements Runnable {
 			if(portfolio.belowMark(portfolio.getCode(i))) {
 				double[] d = toArray(i);
 				double predicted = PolynomialRegression.evaluate(d, (int)currentHour);
-				double delta = Math.abs((predicted - dataIterable[i].get((int)currentHour))/dataIterable[i].get((int)currentHour)) * 100;
-				//System.out.println(delta);
-				//System.out.println("Predicted " + predicted);
-				//System.out.println("Average of " + portfolio.getCode(i) + " $" + portfolio.getAvg(portfolio.getCode(i)));
+				double delta = ((predicted - dataIterable[i].get((int)currentHour))/dataIterable[i].get((int)currentHour)) * 100;
 				if(predicted > portfolio.getAvg(portfolio.getCode(i))) {
-					if(dataIterable[i].get((int)currentHour) > portfolio.getAvg(portfolio.getCode(i)) && delta > 4) {
+					if(dataIterable[i].get((int)currentHour) >= portfolio.getAvg(portfolio.getCode(i)) && delta > 2) {
 						portfolio.buyToMark(portfolio.getCode(i));
+						System.out.println("Case");
 					}
 					else if(dataIterable[i].get((int)currentHour) < portfolio.getAvg(portfolio.getCode(i))) {
 						portfolio.buyToMark(portfolio.getCode(i));
